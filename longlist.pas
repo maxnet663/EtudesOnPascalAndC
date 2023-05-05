@@ -1,4 +1,4 @@
-program LongList_(task2_40);
+program LongList_(task2_40_41);
 
 type
     itemptr = ^item;
@@ -50,19 +50,16 @@ begin
     ListIsEmpty := list.first = nil;
 end;
 
-function RepeatedTimes(var list: LongList; n: longint): integer;
+procedure DeleteNode(var list: LongList; n: longint); {Delete all nodes with field data = n}
 var
     pp: ^itemptr;
     tmp: itemptr;
-    counter: integer;
 begin
     pp := @list.first;
-    counter := 0;
     while pp^ <> nil do
     begin
         if pp^^.data = n then
         begin
-            counter := counter + 1;
             tmp := pp^;
             pp^ := pp^^.next;
             dispose(tmp);
@@ -70,12 +67,45 @@ begin
         else
             pp := @(pp^^.next);
     end;
+end;
+
+function RepeatedTimes(var list: LongList; n: longint): integer;
+var
+    CurNode: itemptr;
+    counter: integer;
+begin
+    CurNode := list.first;
+    counter := 0;
+    while CurNode <> nil do
+    begin
+        if CurNode^.data = n then
+            counter := counter + 1;
+        CurNode := CurNode^.next;
+    end;
     RepeatedTimes := counter;
+end;
+
+function MaxRepeatedTimes(var list: LongList): integer;
+var
+    CurOccurs, max: integer;
+    CurNode: itemptr;
+begin
+    max := 0;
+    CurNode := list.first;
+    while CurNode <> nil do
+    begin
+        CurOccurs := RepeatedTimes(list, CurNode^.data);
+        if CurOccurs > max then
+            max := CurOccurs;
+        CurNode := CurNode^.next;
+    end;
+    MaxRepeatedTimes := max;
 end;
 
 var
     list: LongList;
     n: longint;
+    MaxOccurs: integer;
 begin
     ListInit(list);
     while not eof do
@@ -84,10 +114,11 @@ begin
         ListPut(list, n);
     end;
     writeln;
+    MaxOccurs := MaxRepeatedTimes(list);
     while not ListIsEmpty(list) do
     begin
         ListGet(list, n);
-        if RepeatedTimes(list, n) = 2 then
+        if RepeatedTimes(list, n) = MaxOccurs - 1 then
             writeln(n);
     end;
 end.
