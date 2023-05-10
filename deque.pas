@@ -111,7 +111,7 @@ begin
         if i = 1 then
             LongDequePopFront(d, n)
         else
-            LongDequePopBack(d,n);
+            LongDequePopBack(d, n);
         writeln(n);
     end;
 end.
