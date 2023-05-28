@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int extra_spaces(const char *str) {
+int extra_spaces(const char *str) { /*return amount of extra spaces*/
     int prev_space = 0;
     int counter = 0;
     while (*str) {
@@ -31,8 +31,10 @@ char* spaces_skipper(const char *str) {
     if (!(*str))
         return NULL;
     char *res, *p;
-    res = p = malloc(sizeof(char) * (length(str) - extra_spaces(str)));
+    /*take the memory from the heap for new line and +1 for /0 */
+    res = p = malloc(sizeof(char) * (length(str) - extra_spaces(str)) + 1);
     *p = *str++;
+    /*push chars to new str without extra spaces*/
     while (*str) {
         if ((*str == ' ') && (*p == ' ')) {
             str++;
@@ -40,12 +42,12 @@ char* spaces_skipper(const char *str) {
         }
         *(++p) = *str++;
     }
-    *(++p) = 0;
+    *(++p) = '\0';
     return res;
 }
 
 void skip_space(const char *str) {
-    char *res = spaces_skipper(str);
+    char *res = spaces_skipper(str); /*get the same line without extra spaces*/
     if (!res) {
         fprintf(stderr, "%s\n", "Got NULL");
         return;
