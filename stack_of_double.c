@@ -5,19 +5,23 @@ struct stackdbl {
     int capacity;
     int size;
     double *head;
+    double *data;
 };
 
 void stackdbl_init(struct stackdbl *sod) {
     sod->capacity = 0;
     sod->size = 0;
     sod->head = NULL;
+    sod->data = NULL;
 }
 
 void stackdbl_destroy(struct stackdbl *sod) {
-    if (sod->head)
-        free(sod->head);
+    if (sod->data)
+        free(sod->data);
     sod->capacity = 0;
     sod->size = 0;
+    sod->head = NULL;
+    sod->data = NULL;
 }
 
 void arr_copy(double *dest, double *src, int size) {
@@ -33,10 +37,11 @@ void resize_stack(struct stackdbl *sod) {
         sod->capacity *= 2;
     double *new_arr = malloc(sod->capacity * sizeof(double));
     if (sod->head) {
-        arr_copy(new_arr, sod->head, sod->size);
-        free(sod->head);
+        arr_copy(new_arr + sod->capacity / 2, sod->head, sod->size);
+        free(sod->data);
     }
-    sod->head = new_arr;
+    sod->data = new_arr;
+    sod->head = new_arr + sod->capacity / 2;
 }
 
 void shift_stack_right(double *arr, int size) {
@@ -49,8 +54,8 @@ void stackdbl_push(struct stackdbl *sod, double d) {
     sod->size++;
     if (sod->size > sod->capacity)
         resize_stack(sod);
-    shift_stack_right(sod->head, sod->size);
-    sod->head[0] = d;
+    sod->head = sod->data + (sod->capacity - sod->size);
+    *(sod->head) = d;
 }
 
 void shift_stack_left(double *arr, int size) {
@@ -65,8 +70,11 @@ double stackdbl_pop(struct stackdbl *sod) {
         d = sod->head[0];
     else 
         d = 0;
-    shift_stack_left(sod->head, sod->size);
     sod->size--;
+    if (sod->size)
+        sod->head++;
+    else
+        sod->head = NULL;
     return d;
 }
 
